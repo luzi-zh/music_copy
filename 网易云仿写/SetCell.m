@@ -16,6 +16,7 @@
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if(self){
         [self setupUI];
+        self.contentView.backgroundColor = [UIColor systemBackgroundColor];
     }
     return self;
 }
@@ -41,7 +42,7 @@
         make.centerY.equalTo(self.contentView);
         make.left.equalTo(_leftImg).offset(50);
     }];
-    
+    _label.textColor = [UIColor labelColor];
     
 }
 

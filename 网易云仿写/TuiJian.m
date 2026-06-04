@@ -49,8 +49,11 @@
     self.tableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
-    self.tableView.backgroundColor = [UIColor whiteColor];
+    self.tableView.backgroundColor = [UIColor systemBackgroundColor];
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    //滑动时收起键盘
+    self.tableView.keyboardDismissMode = UIScrollViewKeyboardDismissModeOnDrag;
+
     [self.view addSubview:self.tableView];
     [self.tableView registerClass:[HomeBanner class] forCellReuseIdentifier:@"bannercell"];
     [self.tableView registerClass:[PageScrollCell class] forCellReuseIdentifier:@"scrollcell"];
@@ -58,12 +61,12 @@
     
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(hideKeyboard)];
     [self.view addGestureRecognizer:tap];
+
 }
 
 
 - (void)hideKeyboard {
     [self.searchBar resignFirstResponder];
-    //[self.view endEditing:YES];
 }
 
 
@@ -115,7 +118,7 @@
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
     UIView *headView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, 35)];
-    headView.backgroundColor = [UIColor whiteColor];
+    headView.backgroundColor = [UIColor systemBackgroundColor];
     UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(15, 5, 200, 25)];
     titleLabel.font = [UIFont boldSystemFontOfSize:16];
     if (section == 0) {

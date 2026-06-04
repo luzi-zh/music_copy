@@ -13,6 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic,strong)UIImageView* leftImg;
 @property(nonatomic,strong)UILabel* label;
 @property(nonatomic,strong)UISwitch* swV;
+@property (nonatomic, copy) void (^switchValueChanged)(BOOL isOn);
 @end
 
 NS_ASSUME_NONNULL_END

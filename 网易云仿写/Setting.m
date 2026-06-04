@@ -2,6 +2,8 @@
 #import "Masonry/Masonry.h"
 #import "SetCell.h"
 #import "black.h"
+#import "EditInfo.h"
+#import "AvatarManager.h"
 
 
 @interface Setting ()<UITableViewDelegate,UITableViewDataSource>
@@ -17,9 +19,11 @@
 -(void)viewDidLoad
 {
     [super viewDidLoad];
-    
+    self.view.backgroundColor = [UIColor systemBackgroundColor];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateAvatar) name:@"AvatarChanged" object:nil];
 #pragma mark 头像
-    UIImageView* myI = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"king"]];
+    UIImageView* myI = [[UIImageView alloc] initWithImage:[AvatarManager sharedManager].avatarImage ?:[UIImage imageNamed:@"king"]];
+    myI.tag = 888;
     [self.view addSubview:myI];
     [myI mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(self.view).offset(50);
@@ -39,6 +43,7 @@
         make.height.equalTo(@20);
     }];
     myN.text = @"luzi";
+    myN.textColor = [UIColor labelColor];
     
 #pragma mark 充钱图片
     UIImageView* give = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"give"]];
@@ -56,20 +61,23 @@
     _set = [[UITableView alloc]initWithFrame:CGRectMake(0, 280, 240, 500) style:(UITableViewStylePlain)];
     _set.delegate = self;
     _set.dataSource = self;
+    _set.backgroundColor = [UIColor systemBackgroundColor];
     _arrI = @[@"letter",@"cloud",@"cloth",@"lamp",@"timer",@"alarm",@"bag",@"ticket",@"fire",@"buds"];
     _arrL = @[@"我的消息",@"我的云贝",@"装扮中心",@"创作者中心",@"最近播放",@"定时关闭",@"商场",@"云村有票",@"云推歌",@"我的客服"];
     _set.separatorStyle = UITableViewCellSeparatorStyleNone;
     [_set registerClass:[SetCell class] forCellReuseIdentifier:@"setcell"];
-    [_set registerClass:[black class] forCellReuseIdentifier:@"black"];
+    [_set registerClass:[black class] forCellReuseIdentifier:@"blackcell"];
     [self.view addSubview:_set];
     
-//    _black = [[UITableView alloc] initWithFrame:(CGRectMake(0, 780, 240, 50)) style:(UITableViewStylePlain)];
-//    _black.delegate = self;
-//    _black.dataSource = self;
-//    _black.separatorStyle = UITableViewCellSeparatorStyleNone;
-//    [_black registerClass:[black class] forCellReuseIdentifier:@"blackcell"];
-//    [self.view addSubview:_black];
+    
+    
 }
+
+- (void)updateAvatar {
+    UIImageView *avatarIV = [self.view viewWithTag:888];
+    avatarIV.image = [AvatarManager sharedManager].avatarImage;
+}
+
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
@@ -105,6 +113,18 @@
         cell.swV.userInteractionEnabled = YES;
         cell.swV.transform = CGAffineTransformMakeScale(0.8, 0.8);
         
+        BOOL isDarkModeOn = [[NSUserDefaults standardUserDefaults] boolForKey:@"DarkModeEnabled"];
+            cell.swV.on = isDarkModeOn;
+        cell.switchValueChanged = ^(BOOL isOn) {
+            [[NSUserDefaults standardUserDefaults] setBool:isOn forKey:@"DarkModeEnabled"];
+            [[NSUserDefaults standardUserDefaults] synchronize];
+            if (isOn) {
+                self.view.window.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
+            } else {
+                self.view.window.overrideUserInterfaceStyle = UIUserInterfaceStyleLight;
+            }
+        };
+        
         return cell;
         }
     return nil;
@@ -133,7 +153,7 @@
     CGFloat h = topWin.bounds.size.height;
     
     self.view.frame = CGRectMake(-w, 0, w, h);
-    self.view.backgroundColor = UIColor.whiteColor;
+    self.view.backgroundColor = [UIColor systemBackgroundColor];
     [topWin addSubview:self.view];
     
     [topWin.rootViewController addChildViewController:self];

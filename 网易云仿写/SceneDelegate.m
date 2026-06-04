@@ -8,7 +8,7 @@
 #import "SceneDelegate.h"
 #import "TuiJian.h"
 #import "ManYou.h"
-#import "WoDe.h"
+#import "MyController.h"
 @interface SceneDelegate ()
 
 @end
@@ -20,13 +20,16 @@
     // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
     // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
     // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
+    BOOL dark = [[NSUserDefaults standardUserDefaults] boolForKey:@"DarkModeEnabled"];
+    self.window.overrideUserInterfaceStyle = dark ? UIUserInterfaceStyleDark : UIUserInterfaceStyleLight;
+    
     self.window.frame = [UIScreen mainScreen].bounds;
     TuiJian* vc1 = [[TuiJian alloc] init];
     ManYou* vc2 = [[ManYou alloc] init];
-    WoDe* vc4 = [[WoDe alloc] init];
+    MyController* vc4 = [[MyController alloc] init];
     
     UINavigationController *nav1 = [[UINavigationController alloc] initWithRootViewController:vc1];
-    UINavigationController *nav2 = [[UINavigationController alloc] initWithRootViewController:vc2];
+    //UINavigationController *nav2 = [[UINavigationController alloc] initWithRootViewController:vc2];
     //UINavigationController *nav3 = [[UINavigationController alloc] initWithRootViewController:vc3];
     UINavigationController *nav4 = [[UINavigationController alloc] initWithRootViewController:vc4];
     
@@ -42,10 +45,10 @@
 
         // ------------ nav2 漫游 ------------
     //origImg 就是锁住图片原色，不写图标必变色、样式乱掉。
-    nav2.tabBarItem = [[UITabBarItem alloc] initWithTitle:@"漫游"
+    vc2.tabBarItem = [[UITabBarItem alloc] initWithTitle:@"漫游"
                                                         image:origImg(@"manyou")
                                                     selectedImage:origImg(@"manyou")];
-    nav2.tabBarItem.selectedImage = [origImg(@"manyou") imageWithTintColor:[UIColor redColor]];
+    vc2.tabBarItem.selectedImage = [origImg(@"manyou") imageWithTintColor:[UIColor redColor]];
 
         // ------------ nav4 我的 ------------
     nav4.tabBarItem = [[UITabBarItem alloc] initWithTitle:@"我的"
@@ -56,7 +59,7 @@
     
     
     UITabBarController* tbc = [[UITabBarController alloc] init];
-    tbc.viewControllers = @[nav1,nav2,nav4];
+    tbc.viewControllers = @[nav1,vc2,nav4];
     self.window.rootViewController = tbc;
     [self.window makeKeyAndVisible];
 }

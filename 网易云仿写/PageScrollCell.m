@@ -17,6 +17,7 @@
     self = [super initWithFrame:frame];
     if (self) {
         [self setupUI];
+        self.contentView.backgroundColor = [UIColor systemBackgroundColor];
     }
     return self;
 }
@@ -32,6 +33,8 @@
     // 标题
     _titleLab = [[UILabel alloc] init];
     _titleLab.font = [UIFont systemFontOfSize:15];
+    _titleLab.textColor = [UIColor labelColor];
+    
     [self.contentView addSubview:_titleLab];
     
     // 副标题
@@ -98,6 +101,7 @@
     if (self) {
         self.selectionStyle = UITableViewCellSelectionStyleNone;
         [self setupUI];
+        self.contentView.backgroundColor = [UIColor systemBackgroundColor];
     }
     return self;
 }
@@ -109,7 +113,7 @@
     layout.minimumInteritemSpacing = 0;
     
     self.collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:layout];
-    self.collectionView.backgroundColor = [UIColor whiteColor];
+    self.collectionView.backgroundColor = [UIColor systemBackgroundColor];
     self.collectionView.dataSource = self;
     self.collectionView.delegate = self;
     self.collectionView.pagingEnabled = YES;

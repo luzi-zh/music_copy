@@ -13,6 +13,7 @@
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if(self){
         [self setupUI];
+        self.contentView.backgroundColor = [UIColor systemBackgroundColor];
     }
     return self;
 }

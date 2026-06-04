@@ -8,10 +8,21 @@
 #import "ManYou.h"
 #import "cover.h"
 #import "Setting.h"
+#import "Masonry/Masonry.h"
 @interface ManYou ()
 @property(nonatomic,copy)NSArray* arrI;
 @property(nonatomic,copy)NSArray* arrL;
 @property(nonatomic,strong)UISearchBar* searchBar;
+
+@property (nonatomic, strong) UIScrollView *scrollView;
+@property (nonatomic, retain) NSTimer* timerView;
+@property (nonatomic, strong) NSArray *originArr;
+@property (nonatomic, strong) NSMutableArray *loopArr;
+@property (nonatomic, assign) CGFloat pageW;
+
+@property (nonatomic, strong) NSTimer* loopTimer;
+
+@property (nonatomic, strong) UIPageControl* pageControl;
 @end
 
 @implementation ManYou
@@ -19,6 +30,55 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    
+    self.originArr = @[@"1",@"2",@"3",@"4",@"5"];
+    self.pageW = self.view.bounds.size.width-40;
+    
+    self.loopArr = [NSMutableArray array];
+    [self.loopArr addObject:self.originArr.lastObject]; // 头哑页
+    [self.loopArr addObjectsFromArray:self.originArr];
+    [self.loopArr addObject:self.originArr.firstObject];// 尾哑页
+    
+    UIScrollView *sv = [[UIScrollView alloc]initWithFrame:CGRectMake(20, 40, self.pageW, 60)];
+    sv.pagingEnabled = YES;
+    sv.delegate = self;
+    //sv.showsHorizontalScrollIndicator = YES;
+    sv.showsVerticalScrollIndicator = YES;
+    sv.contentSize = CGSizeMake(self.pageW * self.loopArr.count, 60);
+    [self.view addSubview:sv];
+    self.scrollView = sv;
+    
+    for (int i = 0; i < self.loopArr.count; i++) {
+        UIImageView *iv = [[UIImageView alloc]initWithFrame:CGRectMake(i*self.pageW, 0, self.pageW, 60)];
+        iv.image = [UIImage imageNamed:self.loopArr[i]];
+        iv.contentMode = UIViewContentModeScaleAspectFill;
+        iv.clipsToBounds = YES;
+        iv.layer.cornerRadius = 10;
+        [sv addSubview:iv];
+    }
+    sv.contentOffset = CGPointMake(self.pageW, 0);
+    
+    [self startLoopTimer];
+    
+    self.pageControl = [[UIPageControl alloc] init];
+    [self.view addSubview:_pageControl];
+    [_pageControl mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerX.equalTo(sv);
+        make.bottom.equalTo(sv).offset(-10);
+        make.width.equalTo(@150);
+        make.height.equalTo(@10);
+    }];
+    self.pageControl.numberOfPages = 5;
+    _pageControl.currentPage = 0;
+    _pageControl.pageIndicatorTintColor = [UIColor lightGrayColor];
+    _pageControl.currentPageIndicatorTintColor = [UIColor blackColor];
+    
+    
+    
+    
+    
+    
+    
     UICollectionViewFlowLayout* layout = [[UICollectionViewFlowLayout alloc]init];
     layout.itemSize = CGSizeMake(170, 170);
     layout.minimumLineSpacing = 40;
@@ -26,7 +86,7 @@
     layout.sectionInset = UIEdgeInsetsMake(10, 10, 10, 10);
     layout.scrollDirection = UICollectionViewScrollDirectionVertical;
     
-    UICollectionView* collectionView = [[UICollectionView alloc]initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height) collectionViewLayout:layout];
+    UICollectionView* collectionView = [[UICollectionView alloc]initWithFrame:CGRectMake(0, 110, self.view.bounds.size.width, self.view.bounds.size.height) collectionViewLayout:layout];
     [self.view addSubview:collectionView];
     
     [collectionView registerClass:[cover class] forCellWithReuseIdentifier:@"covercell"];
@@ -36,37 +96,100 @@
     _arrI = @[@"ch",@"lo",@"ji",@"hot",@"we",@"say"];
     _arrL = @[@"华语",@"情歌",@"经典",@"热歌榜",@"欧美",@"说唱"];
     
-    self.navigationController.navigationBar.translucent = NO;
-    self.navigationController.navigationBar.barStyle = UIBarStyleDefault;
-    self.navigationController.navigationBar.shadowImage = nil;
+//    self.navigationController.navigationBar.translucent = NO;
+//    self.navigationController.navigationBar.barStyle = UIBarStyleDefault;
+//    self.navigationController.navigationBar.shadowImage = nil;
+//    
+//    UIView* searchc = [[UIView alloc]initWithFrame:(CGRectMake(0, 0, 250, 35))];
+//    //搜索框
+//    self.searchBar = [[UISearchBar alloc] init];
+//    self.searchBar.placeholder = @"林俊杰";
+//    self.searchBar.barStyle = UIBarStyleDefault;
+//    self.searchBar.frame = searchc.bounds;
+//    self.searchBar.delegate = self;
+//    [self.searchBar setReturnKeyType:UIReturnKeySearch];
+//    [searchc addSubview:self.searchBar];
+//    self.navigationItem.titleView = searchc;
+//    //左三
+//    UIBarButtonItem* tan = [[UIBarButtonItem alloc] initWithImage:[UIImage systemImageNamed:@"line.horizontal.3"] style:UIBarButtonItemStylePlain target:self action:@selector(tanchu)];
+//    self.navigationItem.leftBarButtonItem = tan;
+//    //右听歌识曲
+//    UIButton *rightBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+//    rightBtn.frame = CGRectMake(0, 0, 35, 35);
+//    UIImage* sing = [UIImage imageNamed:@"sing"];
+//    [rightBtn setImage:sing forState:UIControlStateNormal];
+//    // 添加点击事件
+//    [rightBtn addTarget:self action:@selector(rightBtnClick) forControlEvents:UIControlEventTouchUpInside];
+//    //转为导航栏按钮
+//    UIBarButtonItem *rightItem = [[UIBarButtonItem alloc] initWithCustomView:rightBtn];
+//    self.navigationItem.rightBarButtonItem = rightItem;
+//    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(hideKeyboard)];
+//    [self.view addGestureRecognizer:tap];
     
-    UIView* searchc = [[UIView alloc]initWithFrame:(CGRectMake(0, 0, 250, 35))];
-    //搜索框
-    self.searchBar = [[UISearchBar alloc] init];
-    self.searchBar.placeholder = @"林俊杰";
-    self.searchBar.barStyle = UIBarStyleDefault;
-    self.searchBar.frame = searchc.bounds;
-    self.searchBar.delegate = self;
-    [self.searchBar setReturnKeyType:UIReturnKeySearch];
-    [searchc addSubview:self.searchBar];
-    self.navigationItem.titleView = searchc;
-    //左三
-    UIBarButtonItem* tan = [[UIBarButtonItem alloc] initWithImage:[UIImage systemImageNamed:@"line.horizontal.3"] style:UIBarButtonItemStylePlain target:self action:@selector(tanchu)];
-    self.navigationItem.leftBarButtonItem = tan;
-    //右听歌识曲
-    UIButton *rightBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    rightBtn.frame = CGRectMake(0, 0, 35, 35);
-    UIImage* sing = [UIImage imageNamed:@"sing"];
-    [rightBtn setImage:sing forState:UIControlStateNormal];
-    // 添加点击事件
-    [rightBtn addTarget:self action:@selector(rightBtnClick) forControlEvents:UIControlEventTouchUpInside];
-    //转为导航栏按钮
-    UIBarButtonItem *rightItem = [[UIBarButtonItem alloc] initWithCustomView:rightBtn];
-    self.navigationItem.rightBarButtonItem = rightItem;
-    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(hideKeyboard)];
-    [self.view addGestureRecognizer:tap];
+    
     
 }
+
+-(void)startLoopTimer
+{
+    if(_loopTimer){
+            [_loopTimer invalidate];
+            _loopTimer = nil;
+        }
+        self.loopTimer = [NSTimer scheduledTimerWithTimeInterval:1 repeats:YES block:^(NSTimer * _Nonnull timer) {
+            CGFloat offsetX = self.scrollView.contentOffset.x;
+            NSInteger currentPage = offsetX / self.pageW;
+
+            // 下一页
+            NSInteger nextPage = currentPage + 1;
+
+            if (currentPage == self.loopArr.count - 2) {
+                // 最后一张占位图 → 瞬间跳转到第1张真实图
+                self.scrollView.contentOffset = CGPointMake(self.pageW, 0);
+                self.pageControl.currentPage = 0; // 页码重置为0
+            } else {
+                // 正常滚动
+                self.scrollView.contentOffset = CGPointMake(nextPage * self.pageW, 0);
+                self.pageControl.currentPage = nextPage - 1; // 正确页码
+            }
+        }];
+}
+
+-(void)stopLoopTimer
+{
+    if(_loopTimer){
+        [_loopTimer invalidate];
+        _loopTimer = nil;
+    }
+}
+
+-(void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
+{
+    [self stopLoopTimer];
+}
+
+-(void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
+{
+    [self startLoopTimer];
+}
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
+    
+    NSInteger idx = scrollView.contentOffset.x / self.pageW;
+        
+    // 滑到最后哑页 → 跳回第1张真实
+    if (idx == self.loopArr.count - 1) {
+        scrollView.contentOffset = CGPointMake(self.pageW, 0);
+        idx = 1;
+    }
+    // 滑到最前哑页 → 跳回最后一张真实
+    else if (idx == 0) {
+        scrollView.contentOffset = CGPointMake(self.pageW * (self.loopArr.count - 2), 0);
+        idx = self.loopArr.count - 2;
+    }
+    self.pageControl.currentPage = idx - 1;
+}
+
 
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView
 {

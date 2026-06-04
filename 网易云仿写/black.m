@@ -14,6 +14,7 @@
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if(self){
         [self setupUI];
+        self.contentView.backgroundColor = [UIColor systemBackgroundColor];
     }
     return self;
 }
@@ -39,6 +40,7 @@
         make.centerY.equalTo(self.contentView);
         make.left.equalTo(_leftImg).offset(50);
     }];
+    _label.textColor = [UIColor labelColor];
     //开关
     _swV = [[UISwitch alloc]init];
     [self.contentView addSubview:_swV];
@@ -46,6 +48,14 @@
         make.right.equalTo(_label).offset(93);
         make.centerY.equalTo(_label);
     }];
+    [_swV addTarget:self action:@selector(swChanged:) forControlEvents:UIControlEventValueChanged];
+}
+
+- (void)swChanged:(UISwitch *)sender {
+    if (self.switchValueChanged) {
+        self.switchValueChanged(sender.isOn);
+    }
+
 }
 
 - (void)awakeFromNib {

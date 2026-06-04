@@ -56,6 +56,7 @@
         }];
         tv.font = [UIFont systemFontOfSize:12];
         tv.text = tarr[i];
+        tv.textColor = [UIColor labelColor];
         tv.textAlignment = NSTextAlignmentCenter;
     }
 }
