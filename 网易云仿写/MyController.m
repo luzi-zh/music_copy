@@ -11,7 +11,6 @@
 #import "MyHeader.h"
 #import "Masonry/Masonry.h"
 #import "Setting.h"
-#import "ThemeManager.h"
 
 @interface MyController ()<UITableViewDelegate,UITableViewDataSource,UISearchBarDelegate>
 @property (nonatomic, strong) UITableView *tableView;
@@ -58,7 +57,13 @@
     UIBarButtonItem *rightItem = [[UIBarButtonItem alloc] initWithCustomView:rightBtn];
     self.navigationItem.rightBarButtonItem = rightItem;
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(hideKeyboard)];
+    self.tableView.keyboardDismissMode = UIScrollViewKeyboardDismissModeOnDrag;
     [self.view addGestureRecognizer:tap];
+    
+}
+
+-(void)rightBtnClick
+{
     
 }
 

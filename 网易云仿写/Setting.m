@@ -114,7 +114,7 @@
         cell.swV.transform = CGAffineTransformMakeScale(0.8, 0.8);
         
         BOOL isDarkModeOn = [[NSUserDefaults standardUserDefaults] boolForKey:@"DarkModeEnabled"];
-            cell.swV.on = isDarkModeOn;
+        cell.swV.on = isDarkModeOn;
         cell.switchValueChanged = ^(BOOL isOn) {
             [[NSUserDefaults standardUserDefaults] setBool:isOn forKey:@"DarkModeEnabled"];
             [[NSUserDefaults standardUserDefaults] synchronize];
