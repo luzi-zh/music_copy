@@ -60,12 +60,12 @@
 }
 -(void)change:(UIButton*)btn
 {
-    self.isPlay = !self.isPlay;
-    if(self.isPlay){
-        [_btn setImage:[UIImage imageNamed:@"pause"] forState:(UIControlStateNormal)];
-    }else{
-        [_btn setImage:[UIImage imageNamed:@"play"] forState:(UIControlStateNormal)];
-    }
+//    self.isPlay = !self.isPlay;
+//    if(self.isPlay){
+//        [_btn setImage:[UIImage imageNamed:@"pause"] forState:(UIControlStateNormal)];
+//    }else{
+//        [_btn setImage:[UIImage imageNamed:@"play"] forState:(UIControlStateNormal)];
+//    }
 }
 
 - (void)layoutSubviews {

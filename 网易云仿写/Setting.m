@@ -67,6 +67,7 @@
     _set.separatorStyle = UITableViewCellSeparatorStyleNone;
     [_set registerClass:[SetCell class] forCellReuseIdentifier:@"setcell"];
     [_set registerClass:[black class] forCellReuseIdentifier:@"blackcell"];
+    _set.showsVerticalScrollIndicator = NO;
     [self.view addSubview:_set];
     
     

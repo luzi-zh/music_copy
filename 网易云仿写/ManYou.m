@@ -39,22 +39,34 @@
     [self.loopArr addObjectsFromArray:self.originArr];
     [self.loopArr addObject:self.originArr.firstObject];// 尾哑页
     
-    UIScrollView *sv = [[UIScrollView alloc]initWithFrame:CGRectMake(20, 40, self.pageW, 60)];
+    UIScrollView *sv = [[UIScrollView alloc]init];
     sv.pagingEnabled = YES;
     sv.delegate = self;
     //sv.showsHorizontalScrollIndicator = YES;
-    sv.showsVerticalScrollIndicator = YES;
-    sv.contentSize = CGSizeMake(self.pageW * self.loopArr.count, 60);
+    sv.showsVerticalScrollIndicator = NO;
+    sv.contentSize = CGSizeMake(self.pageW * self.loopArr.count, 200);
     [self.view addSubview:sv];
+    [sv mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(self.view.mas_top).offset(40);
+        make.left.equalTo(self.view).offset(20);
+        make.width.mas_equalTo(self.pageW);
+        make.height.equalTo(@200);
+    }];
     self.scrollView = sv;
     
     for (int i = 0; i < self.loopArr.count; i++) {
-        UIImageView *iv = [[UIImageView alloc]initWithFrame:CGRectMake(i*self.pageW, 0, self.pageW, 60)];
+        UIImageView *iv = [[UIImageView alloc]init];
         iv.image = [UIImage imageNamed:self.loopArr[i]];
         iv.contentMode = UIViewContentModeScaleAspectFill;
         iv.clipsToBounds = YES;
         iv.layer.cornerRadius = 10;
         [sv addSubview:iv];
+        [iv mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.left.mas_equalTo(i*self.pageW);
+            make.top.equalTo(@0);
+            make.width.mas_equalTo(self.pageW);
+            make.height.equalTo(@200);
+        }];
     }
     sv.contentOffset = CGPointMake(self.pageW, 0);
     
@@ -64,7 +76,7 @@
     [self.view addSubview:_pageControl];
     [_pageControl mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.equalTo(sv);
-        make.bottom.equalTo(sv).offset(-10);
+        make.bottom.equalTo(sv.mas_bottom).offset(-10);
         make.width.equalTo(@150);
         make.height.equalTo(@10);
     }];
@@ -86,7 +98,7 @@
     layout.sectionInset = UIEdgeInsetsMake(10, 10, 10, 10);
     layout.scrollDirection = UICollectionViewScrollDirectionVertical;
     
-    UICollectionView* collectionView = [[UICollectionView alloc]initWithFrame:CGRectMake(0, 110, self.view.bounds.size.width, self.view.bounds.size.height) collectionViewLayout:layout];
+    UICollectionView* collectionView = [[UICollectionView alloc]initWithFrame:CGRectZero collectionViewLayout:layout];
     [self.view addSubview:collectionView];
     
     [collectionView registerClass:[cover class] forCellWithReuseIdentifier:@"covercell"];
@@ -96,35 +108,12 @@
     _arrI = @[@"ch",@"lo",@"ji",@"hot",@"we",@"say"];
     _arrL = @[@"华语",@"情歌",@"经典",@"热歌榜",@"欧美",@"说唱"];
     
-//    self.navigationController.navigationBar.translucent = NO;
-//    self.navigationController.navigationBar.barStyle = UIBarStyleDefault;
-//    self.navigationController.navigationBar.shadowImage = nil;
-//    
-//    UIView* searchc = [[UIView alloc]initWithFrame:(CGRectMake(0, 0, 250, 35))];
-//    //搜索框
-//    self.searchBar = [[UISearchBar alloc] init];
-//    self.searchBar.placeholder = @"林俊杰";
-//    self.searchBar.barStyle = UIBarStyleDefault;
-//    self.searchBar.frame = searchc.bounds;
-//    self.searchBar.delegate = self;
-//    [self.searchBar setReturnKeyType:UIReturnKeySearch];
-//    [searchc addSubview:self.searchBar];
-//    self.navigationItem.titleView = searchc;
-//    //左三
-//    UIBarButtonItem* tan = [[UIBarButtonItem alloc] initWithImage:[UIImage systemImageNamed:@"line.horizontal.3"] style:UIBarButtonItemStylePlain target:self action:@selector(tanchu)];
-//    self.navigationItem.leftBarButtonItem = tan;
-//    //右听歌识曲
-//    UIButton *rightBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-//    rightBtn.frame = CGRectMake(0, 0, 35, 35);
-//    UIImage* sing = [UIImage imageNamed:@"sing"];
-//    [rightBtn setImage:sing forState:UIControlStateNormal];
-//    // 添加点击事件
-//    [rightBtn addTarget:self action:@selector(rightBtnClick) forControlEvents:UIControlEventTouchUpInside];
-//    //转为导航栏按钮
-//    UIBarButtonItem *rightItem = [[UIBarButtonItem alloc] initWithCustomView:rightBtn];
-//    self.navigationItem.rightBarButtonItem = rightItem;
-//    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(hideKeyboard)];
-//    [self.view addGestureRecognizer:tap];
+    [collectionView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(sv.mas_bottom).offset(10);
+        make.centerX.equalTo(self.view);
+        make.width.mas_equalTo(self.view);
+        make.height.equalTo(@500);
+    }];
     
     
     
@@ -165,16 +154,20 @@
 
 -(void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
 {
+    if(scrollView != self.scrollView) return;
     [self stopLoopTimer];
 }
 
 -(void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
 {
+    if(scrollView != self.scrollView) return;
     [self startLoopTimer];
 }
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
     
+    if(scrollView != self.scrollView) return;
+
     NSInteger idx = scrollView.contentOffset.x / self.pageW;
         
     // 滑到最后哑页 → 跳回第1张真实
